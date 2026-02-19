@@ -1,104 +1,72 @@
 import os
-import logging
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 
 # --- CONFIGURATION ---
-# Owner details (Ninte swapnathilekulla identity)
-BRAND = "AIRA WORLD AI"
-OWNER_NAME = "UMMA (Owner)"
-STATUS_TAG = "MAGAN ENNA MILLIONAIRE"
-
-# --- LOGGING ---
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-# --- COMMANDS ---
+BOT_TOKEN = "8573910741:AAG-mv1WxrFeoZJsf_VOXbajr4QDwIoRBYc" # Ninte puthiya token
+CUSTOM_PAIR_PREFIX = "AIRA-ADAM"
+SIGNATURE = "\n\n🚀 *Sent by Aira Power Engine*"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Main Menu setup like your video."""
+    """Start command with Buttons"""
     keyboard = [
-        [InlineKeyboardButton("|| Bug Menu", callback_data='bug_menu'),
-         InlineKeyboardButton("|| Misc Menu", callback_data='misc_menu')],
-        [InlineKeyboardButton("|| Pairing Code", callback_data='pair_code')],
-        [InlineKeyboardButton("|| Channel", url='https://t.me/your_channel')]
+        [InlineKeyboardButton("🔥 Bug Menu", callback_data='bug_menu')],
+        [InlineKeyboardButton("🛠️ Misc Menu", callback_data='misc_menu')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    header = (
-        f"● ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ●\n"
-        f"          ✨ **{BRAND}** ✨\n"
-        f"➔ **Status**: {STATUS_TAG}\n"
-        f"➔ **Admin**: {OWNER_NAME}\n"
-        f"➔ **Online**: System Active ⚡\n"
-        f"● ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ●"
+    welcome_msg = (
+        "✨ **Airahh is back** ✨\n\n"
+        f"✅ **PAIRING REQUEST**\n"
+        f"➔ Pairing Code: {CUSTOM_PAIR_PREFIX}-2026\n\n"
+        "Status: Ready to connect multiple devices... ⚡"
     )
-    await update.message.reply_text(header, reply_markup=reply_markup, parse_mode='Markdown')
+    await update.message.reply_text(welcome_msg + SIGNATURE, reply_markup=reply_markup, parse_mode='Markdown')
 
-async def handle_menus(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handling the sub-menus for Bugs and Pairing."""
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Buttons click cheyyumpol ulla response"""
     query = update.callback_query
     await query.answer()
 
     if query.data == 'bug_menu':
-        text = (
-            "🚀 **AIRA BUG ENGINE**\n\n"
-            "**Bug Android**\n"
-            "• nullfinity [num]\n"
-            "• crashdroid [num]\n\n"
-            "**Bug iOS**\n"
-            "• xiosvirus [num]\n"
-            "• trashloc [num]"
+        bug_text = (
+            "🔥 **Aira Powerful Bug Menu**\n\n"
+            "📱 **Android:** nullfinity, crashdroid\n"
+            "🍏 **iOS:** xiosvirus, trashloc"
         )
-        await query.edit_message_text(text=text, parse_mode='Markdown')
+        await query.edit_message_text(text=bug_text + SIGNATURE, parse_mode='Markdown')
 
-    elif query.data == 'pair_code':
-        # Generating the unique pairing code as seen in your video
-        pair_text = (
-            "✅ **PAIRING REQUEST**\n"
-            "➔ **Number**: +91XXXXXXXXXX\n"
-            "➔ **Pairing Code**: AIRA-KASH-MIRI-2026\n\n"
-            "Status: Ready to connect..."
+    elif query.data == 'misc_menu':
+        # Misc menu-vil pairing command info vechu
+        misc_text = (
+            "🛠️ **Misc Menu (Settings)**\n\n"
+            "🔗 **Connection:**\n"
+            "Use `/pair +number` to connect new device.\n\n"
+            "⚡ **Power:** Engine is running at 100%"
         )
-        await query.edit_message_text(text=pair_text, parse_mode='Markdown')
+        await query.edit_message_text(text=misc_text + SIGNATURE, parse_mode='Markdown')
 
-# --- MAIN RUNNER ---
+async def pair(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Pairing logic"""
+    if not context.args:
+        await update.message.reply_text("❌ Usage: /pair +91XXXXXXXXXX" + SIGNATURE, parse_mode='Markdown')
+        return
+
+    phone_number = context.args[0]
+    pair_msg = (
+        f"🚀 **Pairing Request Sent!**\n\n"
+        f"📱 **Number:** `{phone_number}`\n"
+        f"🔑 **Code:** `{CUSTOM_PAIR_PREFIX}`"
+    )
+    await update.message.reply_text(pair_msg + SIGNATURE, parse_mode='Markdown')
+
 if __name__ == '__main__':
-    # Add your Bot Token from BotFather here
-    TOKEN = "8447478004:AAEiZKpDXiTfCbGLsY32H_dV52SIcZ96cbM" 
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
     
-    app = ApplicationBuilder().token(TOKEN).build()
-    
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(handle_menus))
-    
-    print("Aira AI is running... Success is coming! 🚀")
-    app.run_polling()
-# Mukalile commands-inu thazhe ithu add cheyyaam
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('pair', pair))
+    application.add_handler(CallbackQueryHandler(button_handler))
 
-async def execute_bug(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Command logic for /xiosvirus and other bugs."""
-    text_received = update.message.text
-    
-    # Extracting the number from command (e.g., /xiosvirus +918921584368)
-    try:
-        command_parts = text_received.split()
-        target_number = command_parts[1]
-        
-        # Aira's Custom Response Logic
-        response = (
-            f"🚀 **AIRA ATTACK INITIATED**\n"
-            f"➔ **Type**: {command_parts[0]}\n"
-            f"➔ **Target**: {target_number}\n"
-            f"➔ **Status**: Sending Powerful Packets... ⚡\n"
-            f"● ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ●\n"
-            f"**AIRA WORLD AI: SUCCESS IS OUR EGO** 😏"
-        )
-        await update.message.reply_text(response, parse_mode='Markdown')
-        
-    except IndexError:
-        await update.message.reply_text("❌ **Format Error!** Use: `/command +number`", parse_mode='Markdown')
-
-# Main app-il ithu register cheyyaan marakkalle:
-# app.add_handler(CommandHandler("xiosvirus", execute_bug))
-# app.add_handler(CommandHandler("nullfinity", execute_bug))
-# app.add_handler(CommandHandler("crashdroid", execute_bug))
+    print("⚡ Aira Power Engine with Buttons is Live!")
+    application.run_polling()
