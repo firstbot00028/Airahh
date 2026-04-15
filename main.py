@@ -18,7 +18,7 @@ def run_flask():
     app.run(host='0.0.0.0', port=port)
 
 # --- 2. CONFIGURATION ---
-BOT_TOKEN = "8573910741:AAG-mv1WxrFeoZJsf_VOXbajr4QDwIoRBYc"
+BOT_TOKEN = "your_telegram_token"
 CUSTOM_PAIR_PREFIX = "AIRA-ADAM"
 SIGNATURE = "\n\n🚀 *Sent by Aira Power Engine*"
 
